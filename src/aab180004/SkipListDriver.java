@@ -25,7 +25,7 @@ public class SkipListDriver {
 	SkipList<Long> skipList = new SkipList<>();
 	// Initialize the timer
 	Timer timer = new Timer();
-
+	int i=1;
 	while (!((operation = sc.next()).equals("End"))) {
 	    switch (operation) {
 	    case "Add": {
@@ -89,6 +89,7 @@ public class SkipListDriver {
 	    }
 		
 	    }
+	    System.out.println(i++);
 	}
 
 	// End Time

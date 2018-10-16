@@ -2,12 +2,18 @@
 
 // Change this to netid of any member of team
 package aab180004;
+/**
+ * @author Achyut Arun Bhandiwad - AAB180004
+ * @author Nirbhay Sibal - NXS180002
+ * @author Vineet Vats - VXV180008
+ */
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
 import static java.lang.Math.min;
+
 
 // Skeleton for skip list implementation.
 
@@ -17,7 +23,7 @@ public class SkipList<T extends Comparable<? super T>> {
     static class Entry<E> {
 	E element;
 	Entry<E>[] next;
-	Entry prev;
+	Entry<E> prev;
 
 	public Entry(E x, int lev) {
 	    element = x;
@@ -51,7 +57,7 @@ public class SkipList<T extends Comparable<? super T>> {
     public void find(T x){
         Entry<T> p = head;
 
-        for(int i  = maxLevel-1; i>=0; i-- ){
+        for(int i  = PossibleLevels-1; i>=0; i-- ){
             while (p.next[i].element != null && p.next[i].element.compareTo(x) < 0){
                 p = p.next[i];
             }
@@ -62,8 +68,22 @@ public class SkipList<T extends Comparable<? super T>> {
     public int chooseLevel(){
         int lev = 1 + Integer.numberOfTrailingZeros(random.nextInt());
         lev = min(lev,maxLevel+1);
+        if(lev > maxLevel)
+            maxLevel = lev;
         return lev;
     }
+    /*private int chooseLevel() {
+        int i = 1;
+        while (i < PossibleLevels) { // largest level is lev
+            boolean b = random.nextBoolean();
+            if (b) {
+                i++;
+            } else {
+                break;
+            }
+        }
+        return i;
+    }*/
 
     // Add x to list. If x already exists, reject it. Returns true if new node is added to list
     public boolean add(T x) {
@@ -83,23 +103,28 @@ public class SkipList<T extends Comparable<? super T>> {
 
     // Find smallest element that is greater or equal to x
     public T ceiling(T x) {
-	return null;
+        find(x);
+        return last[0].next[0].element;
     }
 
     // Does list contain x?
     public boolean contains(T x) {
         find(x);
-	    return last[0].next[0] != null && last[0].next[0].element == x;
+	    return last[0].next[0].element != null && last[0].next[0].element.compareTo(x) == 0;
     }
 
     // Return first element of list
     public T first() {
-	return null;
+	    return head.next[0].element;
     }
 
     // Find largest element that is less than or equal to x
     public T floor(T x) {
-	return null;
+        find(x);
+        if (last[0].next[0].element.compareTo(x) == 0)
+            return x;
+        else
+            return last[0].element;
     }
 
     // Return element at index n of list.  First element is at index 0.
@@ -127,17 +152,38 @@ public class SkipList<T extends Comparable<? super T>> {
 
     // Is the list empty?
     public boolean isEmpty() {
-	return false;
+	    if(size == 0)
+	        return true;
+        return false;
     }
 
     // Iterate through the elements of list in sorted order
     public Iterator<T> iterator() {
-	return null;
+	    return new SLIterator();
+    }
+
+    protected class SLIterator implements Iterator<T> {
+        Entry<T> cursor;
+
+        SLIterator() {
+            cursor = head;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return cursor.next[0] != tail;
+        }
+
+        @Override
+        public T next() {
+            cursor = cursor.next[0];
+            return cursor.element;
+        }
     }
 
     // Return last element of list
     public T last() {
-	return null;
+	return tail.prev.element;
     }
 
     // Optional operation: Reorganize the elements of the list into a perfect skip list
@@ -159,15 +205,61 @@ public class SkipList<T extends Comparable<? super T>> {
 
 	    return ent.element;
     }
+    public void printList() {
+
+        Entry node = head.next[0];
+
+        System.out.println("----------START----------");
+        while (node != null && node.element != null) {
+            for (int i = 0; i < node.next.length; i++) {
+                System.out.print(node.element + "\t");
+            }
+            for (int j = node.next.length; j < PossibleLevels; j++) {
+                System.out.print("|\t");
+            }
+            System.out.println();
+            node = node.next[0];
+        }
+        System.out.println("----------END----------");
+    }
 
     // Return the number of elements in the list
     public int size() {
-	return 0;
+	return size;
     }
 
     public static void main(String[] args){
-        SkipList<Integer> sl= new SkipList<>();
+        SkipList<Long> sl= new SkipList<>();
 
-        sl.add(100);
+        for(long i=0; i<100; i++){
+            if(i!=45)
+                sl.add(i);
+        }
+        //sl.printList();
+        long n = 100;
+        Long num = Long.valueOf("99");
+        System.out.println(sl.remove(num));
+        System.out.println(sl.contains(num));
+        System.out.println(sl.add(num));
+        System.out.println(sl.add(num));
+//        sl.printList();
+        System.out.println(sl.remove(num));
+        System.out.println(sl.contains(num));
+        System.out.println(sl.add(num));
+        System.out.println(sl.add(Long.valueOf("100")));
+        System.out.println(sl.contains(n));
+
+//        Iterator<Integer> sli = sl.iterator();
+//
+//        while(sli.hasNext()){
+//            System.out.println(sli.next());
+//        }
+//        sl.printList();
+
+//        for(int i=0; i<100; i++){
+//            System.out.println(sl.get(i));
+//        }
+        //System.out.println(sl.last());
+
     }
 }
